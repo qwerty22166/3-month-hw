@@ -1,0 +1,17 @@
+*{
+  padding: 0px;
+  margin: 0px;
+  box-sizing: border-box;
+}
+
+form{
+  width: 38%;
+  padding: 20px;
+  margin: 100px auto;
+  border: 2px solid black;
+  border-radius: 20px;
+}
+
+hr{
+  margin: 4px;
+}
