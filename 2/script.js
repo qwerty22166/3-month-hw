@@ -1,4 +1,4 @@
-const promise = new Promise((rejekt) => {
+const promise = new Promise((resolve, rejekt) => {
     const data = {
         userName: "user name",
         userAge: 22,
@@ -11,14 +11,15 @@ const promise = new Promise((rejekt) => {
     setTimeout(() => {
        let errorIndicate = true;
 
-        if(errorIndicate === false) {
-            rejekt("dont touch here");
+       if(errorIndicate === true) {
+            resolve(fromJSONData);
         } else {
-            console.log("Server get response ...", data);
+            rejekt("dont touch here");
         }
     });
-    return fromJSONData
+    return false
 });
 
 promise
-  .then((fromJSONData) => console.log(fromJSONData));
+  .then((resolve) => console.log("Server get response...", resolve))
+  .catch((reject) => console.log(reject));
