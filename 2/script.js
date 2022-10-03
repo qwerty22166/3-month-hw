@@ -17,7 +17,7 @@ const promise = new Promise((resolve, rejekt) => {
             rejekt("dont touch here");
         }
     });
-    return false
+
 });
 
 promise
