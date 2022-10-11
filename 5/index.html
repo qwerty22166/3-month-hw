@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html>
+  <head>
+        
+    <meta charset="utf-8" />
+        
+    <meta name="viewport" content="width=device-width" />
+        
+    <title>Список пользователей</title>
+        
+    <link
+      href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+
+    <style>
+      .modal_shell {
+        width: 100vw;
+        height: 100vh;
+        position: fixed;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        top: 0;
+        left: 0;
+        display: flex;
+      }
+
+      .modal_overlay {
+        width: 100vw;
+        height: 100vh;
+        background: rgba(0, 0, 0, 0.5);
+        position: absolute;
+        z-index: 2;
+      }
+
+      .modals {
+        width: 30vw;
+        height: 50vh;
+        border-radius: 20px;
+        background-color: #ccc;
+        padding: 30px;
+        position: relative;
+        top: 0;
+        left: 0;
+        z-index: 5;
+      }
+
+      .hide {
+        display: none !important;
+      }
+    </style>
+  </head>
+  <body>
+        
+    <h2>Список пользователей</h2>
+        
+    <form id="addForm" name="userForm">
+      <input type="hidden" id="id-field" name="id" value="0" />         
+      <div class="form-group">
+         <label for="name">Имя:</label>             
+        <input class="form-control" name="name" id="userName" />
+                
+      </div>
+              
+      <div class="form-group">
+          <label for="age">Возраст:</label>               
+        <input class="form-control" name="age" id="userAge" />
+                
+      </div>
+              
+      <div class="panel-body">
+        <button type="submit" class="btn btn-sm btn-primary">Сохранить</button>
+        <a id="reset" class="btn btn-sm btn-primary">Сбросить</a>
+                
+      </div>
+          
+    </form>
+        
+    <table class="table table-condensed table-striped table-bordered">
+              
+      <thead>
+        <tr>
+          <th>Id</th>
+          <th>Имя</th>
+          <th>возраст</th>
+          <th></th>
+        </tr>
+      </thead>
+              
+      <tbody id="persons">
+                
+      </tbody>
+          
+    </table>
+            
+
+    <div class="modal_shell hide">
+      <div class="modal_overlay"></div>
+      <div class="modals">
+        <form id="change-form">
+          <input
+            type="text"
+            id="cahnge-name"
+            name="changeName"
+            placeholder="Type your name"
+          />
+          <hr />
+          <input
+            type="text"
+            id="change-age"
+            name="changeAge"
+            placeholder="Type your age"
+          />
+          <hr />
+          <button>Press</button>
+        </form>
+      </div>
+    </div>
+
+    <script>
+      const addFormEl = document.getElementById("addForm");
+      const tableBodyEl = document.querySelector("tbody");
+      const userAgeEl = document.getElementById("userAge");
+      const userNameEl = document.getElementById("userName");
+      const resetBtn = document.getElementById("reset");
+
+      const apiUrl = "/api/users";
+
+      const row = (user) => {
+        const renderUser = `
+          <tr id="${user.id}">
+            <td>${user.id}</td>
+            <td>${user.name}</td>
+            <td>${user.age}</td>
+            <td>
+              <a href="javascript:void(0)">Изменить</a>  
+              <a href="javascript:void(0)" id="delete">Удалить</a>
+              </td>
+          </tr>
+        `;
+        return renderUser;
+      };
+
+      const getUsers = async (url) => {
+        const response = await fetch(url);
+        const data = await response.json();
+
+        let strTemplate = "";
+
+        for (let key in data) {
+          strTemplate += row(data[key]);
+        }
+
+        tableBodyEl.innerHTML = strTemplate;
+        console.log(data);
+      };
+
+      const createUser = async (url, name, age) => {
+        const response = await fetch(url, {
+          method: "POST",
+          headers: {
+            Accept: "application/json",
+            "Content-type": "application/json",
+          },
+          body: JSON.stringify({
+            age,
+            name,
+          }),
+        });
+
+        if (!response.ok) {
+          alert("Что то пошло не так");
+        }
+
+        const data = await response.json();
+        tableBodyEl.innerHTML += row(data);
+        addFormEl.reset();
+        console.log(response);
+      };
+
+      const deleteUser = async (url, id) => {
+        await fetch(`${url}/${id}`, {
+          method: "DELETE",
+        });
+      };
+
+      addFormEl.onsubmit = (event) => {
+        event.preventDefault();
+        createUser(apiUrl, userNameEl.value, userAgeEl.value);
+      };
+
+      tableBodyEl.onclick = (event) => {
+        if (event.target.id === "delete") {
+          let personId = event.target.parentElement.parentElement.id;
+          deleteUser(apiUrl, personId);
+
+          document.getElementById(personId).remove();
+          console.log(personId);
+        }
+      };
+
+      resetBtn.onclick = () => {
+      tableBodyEl.innerHTML = "";
+      }
+
+      getUsers(apiUrl);
+    </script>
+  </body>
+</html>
