@@ -69,7 +69,7 @@ const searchPosts = (event) => {
     const term = event.target.value.toLowerCase();
     const filteresPosts = dataFromBack.filter(
         (el) => {
-        return el.title.toLowerCase().indexOf(term) > -1 || el.body.toLowerCase().indexOf(term) > -1 || el.id.indexOf(term) >=0
+        return el.title.toLowerCase().indexOf(term) > -1 || el.body.toLowerCase().indexOf(term) > -1 || String(el.id).indexOf(term) > -1
         }
     );
     postsContainerEL.innerHTML = createHTMLTemlate(filteresPosts);
